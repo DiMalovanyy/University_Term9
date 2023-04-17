@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name="pacman-univer"
+version="0.0.1"
+dependencies=[
+    "pygame"
+]
+
+[tool.pyright]
+include = ["pacman"]
+exclude = ["**/__pycache__"]
+venv = "env"
