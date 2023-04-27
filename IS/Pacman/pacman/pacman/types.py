@@ -9,7 +9,6 @@ class Coords(tuple[float, float]):
     def __new__(cls, x, y):
         return tuple.__new__(Coords, (x, y))
 
-
 Color = NewType("Color", Tuple[int, int, int])
 
 class Direction(Enum):
