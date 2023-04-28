@@ -1,4 +1,3 @@
-import random
 
 from object.wall import Wall
 from object.ghost import Ghost
@@ -12,20 +11,20 @@ class PacmanGameController:
     def __init__(self):
         self.ascii_maze = [
             "XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-            "XP           XX            X",
+            "X            XX     P      X",
             "X XXXX XXXXX XX XXXXX XXXX X",
             "X XXXX XXXXX XX XXXXX XXXX X",
             "X XXXX XXXXX XX XXXXX XXXX X",
             "X                          X",
             "X XXXX XX XXXXXXXX XX XXXX X",
             "X XXXX XX XXXXXXXX XX XXXX X",
-            "X  G   XX    XX    XX      X",
+            "X      XX    XX    XX      X",
             "XXXXXX XXXXX XX XXXXX XXXXXX",
             "XXXXXX XXXXX XX XXXXX XXXXXX",
             "XXXXXX XX          XX XXXXXX",
             "XXXXXX XX XXX  XXX XX XXXXXX",
             "XXXXXX XX XXX  XXX XX XXXXXX",
-            " G                     G    ",
+            "                       G    ",
             "XXXXXX XX XXX  XXX XX XXXXXX",
             "XXXXXX XX XXX  XXX XX XXXXXX",
             "XXXXXX XX          XX XXXXXX",
@@ -34,7 +33,7 @@ class PacmanGameController:
             "X            XX            X",
             "X XXXX XXXXX XX XXXXX XXXX X",
             "X XXXX XXXXX XX XXXXX XXXX X",
-            "X   XX       G        XX   X",
+            "X   XX  G             XX   X",
             "XXX XX XX XXXXXXXX XX XX XXX",
             "XXX XX XX XXXXXXXX XX XX XXX",
             "X      XX    XX    XX      X",
@@ -50,30 +49,51 @@ class PacmanGameController:
         self.ghost_spawns = []
         self.ghost_colors = [
             (255, 184, 255),
-            (255, 0, 20),
+            (255, 0, 20), # Rose
             (255, 184, 255),
-            (255, 0, 20),
+            (255, 0, 20), #
         ]
         self.size = (0, 0)
         self.convert_maze_to_numpy()
         self.p = AStarPathfinder(self.numpy_maze)
 
-    def request_new_random_path(self, in_ghost: Ghost):
-        random_space = random.choice(self.reachable_spaces)
+    def request_new_path(self, in_ghost: Ghost, in_player):
         current_maze_coord = translate_screen_to_maze(in_ghost.get_position())
+        current_player_position = translate_screen_to_maze(in_player.get_position()) 
 
         pathfinder = None
         if in_ghost.get_id() % 2 == 0:
-            # Rose
+            # Red
             pathfinder = AStarPathfinder(self.numpy_maze)
         else:
-            # Red
+            # Rose
             pathfinder = DjksrtaPathfinder(self.numpy_maze)
+            print("aa")
             
-        path = pathfinder.get_path(current_maze_coord[1], current_maze_coord[0], random_space[1],
-                               random_space[0])
+        path = pathfinder.get_path(current_maze_coord[1], current_maze_coord[0], current_player_position[1],
+                               current_player_position[0])
         test_path = [translate_maze_to_screen(item) for item in path]
+        in_ghost.clear_path()
         in_ghost.set_new_path(test_path)
+
+    def rebuild_ghosts_path(self, ghosts, in_player):
+        current_player_position = translate_screen_to_maze(in_player.get_position()) 
+        for in_ghost in ghosts:
+            current_maze_coord = translate_maze_to_screen(in_ghost.get_position())
+            pathfinder = None
+            
+            if in_ghost.get_id() % 2 == 0:
+                # Red
+                pathfinder = AStarPathfinder(self.numpy_maze)
+            else:
+                # Rose
+                pathfinder = DjksrtaPathfinder(self.numpy_maze)
+                
+            path = pathfinder.get_path(current_maze_coord[1], current_maze_coord[0], current_player_position[1],
+                                   current_player_position[0])
+            test_path = [translate_maze_to_screen(item) for item in path]
+            in_ghost.clear_path()
+            in_ghost.set_new_path(test_path) 
 
     def convert_maze_to_numpy(self):
         for x, row in enumerate(self.ascii_maze):

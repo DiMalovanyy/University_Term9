@@ -30,7 +30,7 @@ def main():
                       pacman_game.ghost_colors[i % 4])
         game_renderer.add_ghost(ghost)
 
-    pacman = Player(game_renderer, unified_size, unified_size, unified_size)
+    pacman = Player(game_renderer, pacman_game, unified_size, unified_size, unified_size)
     game_renderer.add_hero(pacman)
     game_renderer.tick(120)
 

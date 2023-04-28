@@ -4,9 +4,10 @@ from pacman.types import Direction
 from .object import MovableObject
 
 class Player(MovableObject):
-    def __init__(self, in_surface, x, y, in_size: int):
+    def __init__(self, in_surface, controller, x, y, in_size: int):
         super().__init__(in_surface, x, y, in_size, (255, 255, 0), False)
         self.last_non_colliding_position = (0, 0)
+        self._controller = controller
 
     def tick(self):
         # TELEPORT
@@ -27,7 +28,6 @@ class Player(MovableObject):
         if self.collides_with_wall((self.x, self.y)):
             self.set_position(self.last_non_colliding_position[0], self.last_non_colliding_position[1])
 
-        self.handle_catch_by_ghost()
         self.handle_cookie_pickup()
 
     def automatic_move(self, in_direction: Direction):
@@ -49,10 +49,7 @@ class Player(MovableObject):
             collides = collision_rect.colliderect(cookie.get_shape())
             if collides and cookie in game_objects:
                 game_objects.remove(cookie)
-
-    def handle_catch_by_ghost(self):
-        collision_rect = pygame.Rect(self.x, self.y, self._size, self._size)
-        game_objects = self._renderer.get_game_objects()
+                self._controller.rebuild_ghosts_path(self._renderer.get_ghosts(), self)
 
 
 

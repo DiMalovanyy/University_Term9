@@ -21,8 +21,8 @@ class DjksrtaPathfinder(Pathfinder):
         self.pf = tcod.path.Dijkstra(cost=cost, diagonal=0)
 
     def get_path(self, from_x, from_y, to_x, to_y) -> list:
-        self.pf.set_goal(to_x, to_y)
-        res = self.pf.get_path(from_x, from_y)
+        self.pf.set_goal(from_x, from_y)
+        res = self.pf.get_path(to_x, to_y)
         return [(sub[1], sub[0]) for sub in res]
         
     
